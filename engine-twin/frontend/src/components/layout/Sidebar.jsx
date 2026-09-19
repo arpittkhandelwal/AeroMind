@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Activity, Box, LineChart, ScanSearch,
-  TrendingUp, Navigation, Sliders, Database
+  TrendingUp, Navigation, Sliders, Database, Radio, Brain
 } from 'lucide-react'
 
 const NAV_GROUPS = [
@@ -16,7 +16,8 @@ const NAV_GROUPS = [
     items: [
       { label: 'Overview',     icon: LayoutDashboard, path: '/',     end: true },
       { label: 'Live Monitor', icon: Activity,         path: '/live' },
-      { label: 'Fleet View',   icon: Navigation,       path: '/fleet' },
+      { label: 'Fleet View',         icon: Navigation, path: '/fleet' },
+      { label: 'Fleet Intelligence',  icon: Radio,      path: '/fleet-intelligence' },
     ],
   },
   {
@@ -29,7 +30,8 @@ const NAV_GROUPS = [
   {
     label: 'INTELLIGENCE',
     items: [
-      { label: 'Diagnostics', icon: ScanSearch, path: '/diagnostics' },
+      { label: 'Diagnostics',    icon: ScanSearch, path: '/diagnostics' },
+      { label: 'AI Explainer',    icon: Brain,      path: '/explainer' },
       { label: 'Predictions', icon: TrendingUp, path: '/predictions' },
     ],
   },

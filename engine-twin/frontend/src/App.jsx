@@ -19,7 +19,9 @@ import AppShell     from './components/layout/AppShell'
 /* ── Pages — eager (small) ──────────────────────────────────────── */
 import Overview       from './pages/Overview'
 import LiveMonitor    from './pages/LiveMonitor'
-import FleetView      from './pages/FleetView'
+import FleetView           from './pages/FleetView'
+import FleetIntelligence  from './pages/FleetIntelligence'
+import SHAPExplainer      from './pages/SHAPExplainer'
 import TelemetryPage  from './pages/TelemetryPage'
 import Diagnostics    from './pages/Diagnostics'
 import Predictions    from './pages/Predictions'
@@ -67,7 +69,8 @@ export default function App() {
             {/* OPERATIONS */}
             <Route index             element={<Overview />} />
             <Route path="live"       element={<LiveMonitor />} />
-            <Route path="fleet"      element={<FleetView />} />
+            <Route path="fleet"              element={<FleetView />} />
+            <Route path="fleet-intelligence" element={<FleetIntelligence />} />
 
             {/* DIGITAL TWIN — code-split */}
             <Route path="digital-twin" element={
@@ -79,7 +82,8 @@ export default function App() {
             <Route path="telemetry"    element={<TelemetryPage />} />
 
             {/* INTELLIGENCE */}
-            <Route path="diagnostics" element={<Diagnostics />} />
+            <Route path="diagnostics"  element={<Diagnostics />} />
+            <Route path="explainer"    element={<SHAPExplainer />} />
             <Route path="predictions" element={<Predictions />} />
 
             {/* MISSIONS */}
