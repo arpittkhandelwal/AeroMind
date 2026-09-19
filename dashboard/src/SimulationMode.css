@@ -1,0 +1,541 @@
+/* SimulationMode.css — DRDO UAV Digital Twin Ground Control Station */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ─── Root tokens (scoped so they don't bleed) ─── */
+.sim-gcs {
+  --bg:       #080d13;
+  --panel:    #0e1620;
+  --panel2:   #131e2a;
+  --line:     #1e2d3d;
+  --ink:      #dfe8ee;
+  --dim:      #8fa3b1;
+  --faint:    #4e6474;
+  --ok:       #3fb9a4;
+  --caution:  #e0a526;
+  --warn:     #d6552f;
+  --crit:     #e03e33;
+  --saffron:  #ff9933;
+  --rail-w:   280px;
+
+  /* Layout */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Barlow Semi Condensed', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.sim-gcs *, .sim-gcs *::before, .sim-gcs *::after {
+  box-sizing: border-box;
+}
+
+.sim-gcs .mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── STAGE (left, 3-D canvas area) ─── */
+.sim-gcs .gcs-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #050a0f;
+}
+
+.sim-gcs .gcs-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* ─── STATUS STRIP ─── */
+.sim-gcs .gcs-strip {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, rgba(5,9,14,.95) 0%, rgba(5,9,14,.5) 70%, transparent);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.sim-gcs .gcs-state {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 12px;
+  border-left: 3px solid var(--ok);
+  background: rgba(14,22,32,.9);
+  border-radius: 2px;
+  pointer-events: all;
+}
+.sim-gcs .gcs-state .s-label {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--ok);
+  transition: color .3s;
+}
+.sim-gcs .gcs-state .s-sub {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.sim-gcs .gcs-flight {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--dim);
+}
+.sim-gcs .gcs-flight i {
+  font-style: normal;
+  color: var(--faint);
+  margin-right: 4px;
+}
+
+/* ─── RUL COUNTDOWN ─── */
+.sim-gcs .gcs-rul {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: rgba(20,10,8,.9);
+  border: 1px solid rgba(214,85,47,.5);
+  border-radius: 2px;
+  pointer-events: all;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.sim-gcs .gcs-rul.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.sim-gcs .gcs-rul .rul-label {
+  font-size: 11.5px;
+  color: var(--dim);
+  max-width: 110px;
+  line-height: 1.2;
+}
+.sim-gcs .gcs-rul .rul-clock {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--warn);
+  letter-spacing: .02em;
+  line-height: 1;
+}
+.sim-gcs .gcs-rul.hot .rul-clock {
+  color: var(--crit);
+  animation: gcs-pulse .85s infinite;
+}
+@keyframes gcs-pulse { 50% { opacity: .3; } }
+
+/* ─── INSPECTOR CARD ─── */
+.sim-gcs .gcs-inspector {
+  position: absolute;
+  top: 70px;
+  left: 16px;
+  width: 280px;
+  background: rgba(14,22,32,.96);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+  border-radius: 3px;
+  z-index: 20;
+  animation: gcs-fadein .2s ease;
+}
+@keyframes gcs-fadein { from { opacity: 0; transform: translateY(-6px); } }
+
+.sim-gcs .gcs-inspector header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.sim-gcs .gcs-inspector header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sim-gcs .gcs-inspector header p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--faint);
+}
+.sim-gcs .gcs-inspector .ins-close {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: var(--faint);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.sim-gcs .gcs-inspector .ins-close:hover { color: var(--ink); }
+.sim-gcs .gcs-inspector .ins-health {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.sim-gcs .gcs-inspector .ins-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+  border-radius: 2px;
+}
+.sim-gcs .gcs-inspector .ins-bar-fill {
+  height: 100%;
+  background: var(--ok);
+  transition: width .4s ease, background .4s ease;
+  border-radius: 2px;
+}
+.sim-gcs .gcs-inspector .ins-pct {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--dim);
+  width: 38px;
+  text-align: right;
+}
+.sim-gcs .gcs-inspector .ins-note {
+  padding: 8px 12px 10px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+/* ─── HINT ─── */
+.sim-gcs .gcs-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  font-size: 12px;
+  color: var(--faint);
+  pointer-events: none;
+  text-shadow: 0 1px 4px #000;
+  z-index: 10;
+}
+
+/* ─── LOSS OVERLAY ─── */
+.sim-gcs .gcs-loss {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4,7,10,.85);
+  backdrop-filter: blur(4px);
+  z-index: 30;
+  animation: gcs-fadein .3s ease;
+}
+.sim-gcs .gcs-loss-card {
+  width: min(430px, 90%);
+  background: var(--panel);
+  border: 1px solid rgba(224,62,51,.4);
+  padding: 24px;
+  border-radius: 3px;
+}
+.sim-gcs .gcs-loss-card h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--crit);
+}
+.sim-gcs .gcs-loss-card .loss-sub {
+  margin: 0 0 16px;
+  color: var(--faint);
+  font-size: 13px;
+}
+.sim-gcs .gcs-loss-card dl {
+  margin: 0 0 18px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  font-size: 13.5px;
+}
+.sim-gcs .gcs-loss-card dt { color: var(--faint); }
+.sim-gcs .gcs-loss-card dd { margin: 0; text-align: right; }
+
+/* ─── RAIL (right panel) ─── */
+.sim-gcs .gcs-rail {
+  width: var(--rail-w);
+  flex: 0 0 var(--rail-w);
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sim-gcs .gcs-rail-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+}
+.sim-gcs .gcs-rail-scroll::-webkit-scrollbar { width: 4px; }
+.sim-gcs .gcs-rail-scroll::-webkit-scrollbar-track { background: transparent; }
+.sim-gcs .gcs-rail-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+
+.sim-gcs .rail-title {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.sim-gcs .rail-title h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: .02em;
+}
+.sim-gcs .rail-title small {
+  font-size: 11px;
+  color: var(--faint);
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* ─── HEALTH RING ─── */
+.sim-gcs .health-ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  gap: 6px;
+}
+.sim-gcs .health-ring-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.sim-gcs .health-ring-svg { position: relative; }
+.sim-gcs .health-ring-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  transition: color .4s;
+}
+.sim-gcs .health-ring-status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ─── BLOCK sections ─── */
+.sim-gcs .gcs-block {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 16px;
+}
+.sim-gcs .gcs-block h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+/* ─── BUTTONS ─── */
+.sim-gcs .gcs-btn {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 7px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s, border-color .15s;
+}
+.sim-gcs .gcs-btn:hover { background: #1a2d3f; }
+.sim-gcs .gcs-btn:last-child { margin-bottom: 0; }
+.sim-gcs .gcs-btn.prime { background: #173040; border-color: #2a5470; color: #9dd4e8; }
+.sim-gcs .gcs-btn.prime:hover { background: #1e3f54; }
+.sim-gcs .gcs-btn.danger { border-color: rgba(214,85,47,.5); color: #f0b39c; }
+.sim-gcs .gcs-btn.danger:hover { background: rgba(214,85,47,.1); }
+.sim-gcs .gcs-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.sim-gcs select {
+  width: 100%;
+  padding: 8px 9px;
+  margin-bottom: 8px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.sim-gcs select:focus { outline: 1px solid #2a5470; }
+
+/* ─── TELEMETRY ROWS ─── */
+.sim-gcs .tele-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  font-size: 13.5px;
+  border-bottom: 1px solid rgba(30,45,61,.5);
+}
+.sim-gcs .tele-row:last-child { border-bottom: 0; }
+.sim-gcs .tele-n { flex: 1; color: var(--dim); }
+.sim-gcs .tele-v {
+  width: 76px;
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--ink);
+  transition: color .3s;
+}
+.sim-gcs .tele-e {
+  width: 58px;
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--faint);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sim-gcs .tele-row.dev .tele-v { color: var(--caution); }
+.sim-gcs .tele-row.bad .tele-v { color: var(--crit); }
+
+/* ─── SUBSYSTEM HEALTH ─── */
+.sim-gcs .sub-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 16px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--dim);
+  text-align: left;
+  transition: background .12s;
+}
+.sim-gcs .sub-btn:hover { background: var(--panel2); color: var(--ink); }
+.sim-gcs .sub-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  flex-shrink: 0;
+  transition: background .3s;
+}
+.sim-gcs .sub-pct {
+  margin-left: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* ─── WHY PANEL ─── */
+.sim-gcs .why-hdr {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 8px;
+}
+.sim-gcs .why-text {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.45;
+}
+.sim-gcs .why-driver {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 13px;
+  color: var(--dim);
+  border-bottom: 1px solid rgba(30,45,61,.4);
+}
+.sim-gcs .why-driver b {
+  font-weight: 500;
+  color: var(--caution);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ─── MISSION LOG ─── */
+.sim-gcs .gcs-log {
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+.sim-gcs .gcs-log h2 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.sim-gcs .gcs-log ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sim-gcs .gcs-log li {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+  font-size: 12.5px;
+  color: var(--dim);
+  border-bottom: 1px solid rgba(30,45,61,.35);
+}
+.sim-gcs .gcs-log li:last-child { border-bottom: 0; }
+.sim-gcs .gcs-log li time {
+  color: var(--faint);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  flex: 0 0 52px;
+  padding-top: 1px;
+}
+.sim-gcs .gcs-log li.w { color: #f0b39c; }
+.sim-gcs .gcs-log li.g { color: #8fd8c9; }
+
+/* ─── CRITICAL ANIMATIONS ─── */
+@keyframes gcs-border-flash {
+  0%, 100% { box-shadow: inset 0 0 0 2px rgba(224,62,51,0); }
+  50%       { box-shadow: inset 0 0 0 2px rgba(224,62,51,.7); }
+}
+.sim-gcs.critical .gcs-stage {
+  animation: gcs-border-flash 1.2s infinite;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .sim-gcs {
+    flex-direction: column;
+    --rail-w: 100%;
+  }
+  .sim-gcs .gcs-rail {
+    width: 100%;
+    max-height: 45%;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}

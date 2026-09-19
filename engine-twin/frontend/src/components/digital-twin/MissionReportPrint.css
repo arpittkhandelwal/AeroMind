@@ -1,0 +1,264 @@
+/* ─── MissionReportPrint.css ────────────────────────────────────────────────
+   On-screen modal + @media print clean output.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Modal overlay ── */
+#dt-report-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.80);
+  overflow-y: auto;
+  padding: 32px 16px 64px;
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: flex-start;
+}
+#dt-report-modal.open {
+  display: flex;
+}
+
+/* ── Document ── */
+.print-report-container {
+  background: #fff;
+  color: #111;
+  width: 100%;
+  max-width: 900px;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 40px 48px;
+  box-shadow: 0 24px 100px rgba(0, 0, 0, 0.55);
+  border-radius: 2px;
+  position: relative;
+}
+
+/* ── Action bar (hidden on print) ── */
+.print-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+.print-action-btn {
+  padding: 6px 18px;
+  border-radius: 4px;
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  transition: background 0.15s;
+}
+.print-action-btn:hover { background: #333; }
+.print-action-btn.close { background: #c00; border-color: #c00; }
+.print-action-btn.close:hover { background: #900; }
+
+/* ── Header ── */
+.print-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.print-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.print-header-text {
+  flex: 1;
+}
+.print-header-org {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #000;
+}
+.print-header-dept {
+  font-size: 10px;
+  color: #444;
+  margin: 2px 0 4px;
+  letter-spacing: 0.04em;
+}
+.print-header-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.06em;
+}
+.print-header-stamp {
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.3;
+  white-space: pre-line;
+  border: 2px solid currentColor;
+  padding: 8px 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.print-divider {
+  border: none;
+  border-top: 2px solid #000;
+  margin: 14px 0 20px;
+}
+
+/* ── Section ── */
+.print-section {
+  margin-bottom: 24px;
+  page-break-inside: avoid;
+}
+.print-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 5px;
+  margin: 0 0 12px;
+  color: #000;
+}
+
+/* ── 2-col grid ── */
+.print-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.print-meta-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5px;
+}
+.print-meta-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #eee;
+}
+.print-meta-table td:first-child {
+  color: #555;
+  width: 50%;
+}
+
+/* ── Outcome colours ── */
+.print-fail { color: #c00; font-weight: 700; }
+.print-pass { color: #006400; font-weight: 700; }
+
+/* ── RCA box ── */
+.print-rca-box {
+  border: 1.5px solid #c00;
+  background: #fff5f5;
+  padding: 14px 18px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.print-rca-header {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #c00;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+.print-rca-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.print-rca-item {
+  background: #fff;
+  border: 1px solid #fcc;
+  border-radius: 3px;
+  padding: 8px 12px;
+}
+.print-rca-label {
+  font-size: 9px;
+  color: #999;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.print-rca-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* ── Telemetry & SHAP tables ── */
+.print-telemetry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5px;
+}
+.print-telemetry-table th {
+  background: #111;
+  color: #fff;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  font-size: 9.5px;
+}
+.print-telemetry-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+}
+.print-telemetry-table tr:nth-child(even) td {
+  background: #f8f8f8;
+}
+
+/* ── Event log ── */
+.print-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.print-log-table th {
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  text-align: left;
+  font-size: 9.5px;
+}
+.print-log-table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.print-log-table tr:nth-child(even) td { background: #f9f9f9; }
+
+/* ── Description text ── */
+.print-desc {
+  font-size: 10.5px;
+  color: #555;
+  margin: 0 0 12px;
+  font-style: italic;
+  line-height: 1.7;
+}
+
+/* ── Footer ── */
+.print-footer {
+  margin-top: 28px;
+  padding-top: 10px;
+  border-top: 2px solid #000;
+}
+.print-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8.5px;
+  color: #888;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+/* ── @media print ── */
+@media print {
+  body * { visibility: hidden; }
+  #dt-report-modal, #dt-report-modal * { visibility: visible; }
+  #dt-report-modal { position: fixed; inset: 0; background: none; padding: 0; display: block; overflow: visible; }
+  .print-report-container { box-shadow: none; max-width: 100%; padding: 20px 28px; }
+  .print-actions, .no-print { display: none !important; }
+}

@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: UAV Engine Digital Twin API
+  version: 0.1.0
+paths:
+  /telemetry/ingest:
+    post:
+      summary: Ingest one telemetry frame
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '../contracts/telemetry_schema.json' }
+      responses: { '200': { description: Frame accepted } }
+  /telemetry/latest:
+    get:
+      summary: Latest frame for a mission, for live dashboard view
+      parameters: [{ name: mission_id, in: query, required: true, schema: { type: string } }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  frame: { $ref: '../contracts/telemetry_schema.json' }
+                  health_index: { type: number, minimum: 0, maximum: 100 }
+                  active_alerts: { type: array, items: { $ref: '#/components/schemas/Alert' } }
+  /rul/{mission_id}:
+    get:
+      summary: Current RUL estimate and degradation trend
+      parameters: [{ name: mission_id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rul_hours: { type: number }
+                  confidence: { type: number, minimum: 0, maximum: 1 }
+                  degradation_trend: { type: string, enum: [stable, degrading, critical] }
+                  contributing_factors: { type: array, items: { type: string } }
+  /faults/{mission_id}:
+    get:
+      summary: Detected/predicted faults for a mission
+      parameters: [{ name: mission_id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Alert' } } } } }
+  /missions:
+    get:
+      summary: List missions available for replay
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    mission_id: { type: string }
+                    profile: { type: string, enum: [high_altitude, endurance, hot_weather, rapid_throttle, nominal] }
+                    started_at: { type: string, format: date-time }
+                    duration_min: { type: number }
+  /missions/{mission_id}/replay:
+    get:
+      summary: Full time series for post-flight analysis and mission replay
+      parameters: [{ name: mission_id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { content: { application/json: { schema: { type: array, items: { $ref: '../contracts/telemetry_schema.json' } } } } }
+components:
+  schemas:
+    Alert:
+      type: object
+      properties:
+        fault_type: { type: string, enum: [misfire, injector_fault, sensor_drift, overheating, combustion_instability, lubrication_issue, abnormal_vibration] }
+        severity: { type: string, enum: [info, warning, critical] }
+        detected_at: { type: string, format: date-time }
+        message: { type: string }
+        recommended_action: { type: string }

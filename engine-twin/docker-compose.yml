@@ -1,0 +1,126 @@
+networks:
+  dt_net:
+    driver: bridge
+
+volumes:
+  timescale_data:
+  mosquitto_data:
+
+services:
+
+  # ─── MQTT Broker ─────────────────────────────────────────────────────────────
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: dt_mosquitto
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "health/check", "-m", "ping", "-q", "0"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - dt_net
+
+  # ─── Time-Series Database ─────────────────────────────────────────────────────
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: dt_timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-digital_twin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_hackathon}
+      POSTGRES_DB: ${POSTGRES_DB:-engine_db}
+    ports:
+      - "${TIMESCALE_PORT:-5432}:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./infra/timescaledb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-digital_twin} -d ${POSTGRES_DB:-engine_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - dt_net
+
+  # ─── Backend Ingestion + WebSocket API ───────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dt_backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MQTT_HOST: mosquitto
+      TIMESCALE_HOST: timescaledb
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    networks:
+      - dt_net
+
+  # ─── ML Inference Service ────────────────────────────────────────────────────
+  ml:
+    build:
+      context: ./ml
+      dockerfile: Dockerfile
+    container_name: dt_ml
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MQTT_HOST: mosquitto
+      TIMESCALE_HOST: timescaledb
+    ports:
+      - "${ML_PORT:-8001}:8001"
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    networks:
+      - dt_net
+
+  # ─── Engine Simulator ────────────────────────────────────────────────────────
+  simulator:
+    build:
+      context: ./simulator
+      dockerfile: Dockerfile
+    container_name: dt_simulator
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MQTT_HOST: mosquitto
+      SIM_FAULT_SCENARIO: ${SIM_FAULT_SCENARIO:-normal}
+      SIM_PUBLISH_INTERVAL: ${SIM_PUBLISH_INTERVAL:-1.0}
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - dt_net
+
+  # ─── React Frontend ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dt_frontend
+    restart: unless-stopped
+    environment:
+      VITE_WS_URL: ${VITE_WS_URL:-ws://localhost:8000/ws}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - backend
+    networks:
+      - dt_net

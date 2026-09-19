@@ -1,0 +1,9 @@
+{
+  "name": "uav-digital-twin-gcs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MALE UAV digital twin with a Ground Control Station panel: live simulated telemetry, click-to-inspect subsystems, fault injection, predictive-failure countdown, and an airframe-loss sequence. Single self-contained HTML file, no build step.",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

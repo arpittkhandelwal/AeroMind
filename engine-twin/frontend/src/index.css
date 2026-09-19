@@ -1,0 +1,93 @@
+/* Google Font — Inter & JetBrains/IBM Plex Mono */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── ENGINE-TWIN · Clean Aerospace Light Design System ───────────── */
+:root {
+  /* Core light theme tokens */
+  --dt-bg:        #F8FAFC;
+  --dt-panel:     #FFFFFF;
+  --dt-elevated:  #FFFFFF;
+  --dt-border:    #E2E8F0;
+  --dt-border-lt: #F1F5F9;
+  --dt-text:      #0F172A;
+  --dt-muted:     #475569;
+  --dt-faint:     #94A3B8;
+  --dt-accent:    #D97706;
+  --dt-accent-sub:#0284C7;
+  --dt-healthy:   #059669;
+  --dt-warning:   #D97706;
+  --dt-critical:  #DC2626;
+  --dt-info:      #0284C7;
+
+  /* Legacy vars — backward compat */
+  --color-bg:      #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-border:  #E2E8F0;
+  --color-accent:  #0284C7;
+  --color-warn:    #D97706;
+  --color-danger:  #DC2626;
+  --color-ok:      #059669;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--dt-bg);
+  color: var(--dt-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── LIVE indicator pulse ───────────────────────────────────────── */
+@keyframes dt-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.15); }
+}
+.dt-live-pulse {
+  animation: dt-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Scrollbars — clean light ───────────────────────────────────── */
+nav::-webkit-scrollbar,
+main::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+nav::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track {
+  background: transparent;
+}
+nav::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+nav::-webkit-scrollbar-thumb:hover,
+main::-webkit-scrollbar-thumb:hover,
+div::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* ── Form Inputs ────────────────────────────────────────────────── */
+input[type="range"]          { accent-color: var(--dt-accent); }
+input[type="datetime-local"] { color-scheme: light; }
+
+/* ── Subtle Aerospace Card Hover ───────────────────────────────── */
+.dt-card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.dt-card-hover:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08);
+}

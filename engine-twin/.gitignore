@@ -1,0 +1,46 @@
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+*.egg
+
+# ─── Environment ─────────────────────────────────────────
+.env
+*.env.local
+
+# ─── Node / Frontend ─────────────────────────────────────
+node_modules/
+dist/
+.next/
+.vite/
+
+# ─── ML artefacts ────────────────────────────────────────
+ml/models/*.pkl
+ml/models/*.onnx
+ml/models/*.pt
+ml/data/*.csv
+ml/data/*.parquet
+
+# ─── IDE / OS ────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+
+# ─── Docker ──────────────────────────────────────────────
+docker-compose.override.yml
+
+# ─── Logs ────────────────────────────────────────────────
+*.log
+logs/

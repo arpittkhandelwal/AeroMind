@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineTelemetryFrame",
+  "description": "One timestamped reading from the aero piston engine. Produced by data-sim, consumed by edge-preprocessing, physics-model, and ml-fault-rul.",
+  "type": "object",
+  "required": ["timestamp", "mission_id", "rpm", "cht_c", "egt_c", "oil_pressure_kpa", "oil_temp_c", "fuel_flow_lph", "vibration_g", "battery_voltage_v", "injection_timing_deg", "altitude_m", "ambient_temp_c", "throttle_pct"],
+  "properties": {
+    "timestamp": { "type": "string", "format": "date-time" },
+    "mission_id": { "type": "string" },
+    "rpm": { "type": "number", "minimum": 0, "maximum": 8000 },
+    "cht_c": { "type": "number" },
+    "egt_c": { "type": "number" },
+    "oil_pressure_kpa": { "type": "number" },
+    "oil_temp_c": { "type": "number" },
+    "fuel_flow_lph": { "type": "number" },
+    "vibration_g": { "type": "number" },
+    "battery_voltage_v": { "type": "number" },
+    "alternator_current_a": { "type": "number" },
+    "injection_timing_deg": { "type": "number" },
+    "altitude_m": { "type": "number" },
+    "ambient_temp_c": { "type": "number" },
+    "throttle_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "fault_label": {
+      "type": ["string", "null"],
+      "enum": [null, "none", "misfire", "injector_fault", "sensor_drift", "cooling_degradation", "overheating", "combustion_instability", "lubrication_issue", "abnormal_vibration"]
+    }
+  }
+}

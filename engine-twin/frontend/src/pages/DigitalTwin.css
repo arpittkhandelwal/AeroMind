@@ -1,0 +1,636 @@
+:root{
+  --bg:#080d13;
+  --panel:#0e1620;
+  --panel-2:#131e2a;
+  --line:#22323f;
+  --ink:#dfe8ee;
+  --ink-dim:#8fa3b1;
+  --ink-faint:#5d7183;
+  --ok:#3fb9a4;
+  --caution:#e0a526;
+  --warn:#d6552f;
+  --crit:#e03e33;
+  --khaki:#8d8f5e;
+  --saffron:#ff9933;
+  --green:#138808;
+}
+
+.dt-container {
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Barlow Semi Condensed",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-size:15px;
+  overflow:hidden;
+  display:flex;
+  height:100%;
+  width:100%;
+}
+
+.dt-container * {
+  box-sizing:border-box;
+}
+
+.dt-num {
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  font-variant-numeric:tabular-nums;
+}
+
+#dt-stage {
+  position:relative;
+  flex:1 1 auto;
+  min-width:0;
+  min-height: 440px;
+  height: 100%;
+}
+
+#dt-canvas-wrap {
+  position:absolute;
+  inset:0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ---------- status strip ---------- */
+#dt-strip {
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:10px 16px;
+  background:linear-gradient(180deg,rgba(6,10,15,.92),rgba(6,10,15,.35) 70%,transparent);
+  pointer-events:none;
+}
+
+#dt-state {
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  padding:5px 12px;
+  border-radius:2px;
+  border-left:3px solid var(--ok);
+  background:rgba(14,22,32,.82);
+}
+
+#dt-state b {
+  font-size:19px;
+  font-weight:600;
+  letter-spacing:.04em;
+  color:var(--ok);
+}
+
+#dt-state span {
+  color:var(--ink-faint);
+  font-size:13px;
+}
+
+#dt-strip .dt-flight {
+  color:var(--ink-dim);
+  font-size:13.5px;
+  display:flex;
+  gap:16px;
+}
+
+#dt-strip .dt-flight i {
+  font-style:normal;
+  color:var(--ink-faint);
+}
+
+/* countdown */
+#dt-rul {
+  margin-left:auto;
+  display:none;
+  align-items:center;
+  gap:12px;
+  padding:6px 14px;
+  background:rgba(20,10,8,.85);
+  border:1px solid rgba(214,85,47,.5);
+  border-radius:2px;
+}
+
+#dt-rul.on {
+  display:flex;
+}
+
+#dt-rul .lbl {
+  font-size:12.5px;
+  color:var(--ink-dim);
+  max-width:118px;
+  line-height:1.15;
+}
+
+#dt-rul .clk {
+  font-size:30px;
+  font-weight:600;
+  color:var(--warn);
+  letter-spacing:.01em;
+}
+
+#dt-rul.hot .clk {
+  color:var(--crit);
+  animation:dt-pulse .85s infinite;
+}
+
+@keyframes dt-pulse {
+  50% { opacity:.35; }
+}
+
+/* ---------- 3D hotspot marker ---------- */
+.dt-spot {
+  position:absolute;
+  width:26px;
+  height:26px;
+  margin:-13px 0 0 -13px;
+  border:1.5px solid var(--crit);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-weight:600;
+  color:#fff;
+  background:rgba(224,62,51,.22);
+  cursor:pointer;
+  box-shadow:0 0 0 0 rgba(224,62,51,.55);
+  animation:dt-ping 1.6s infinite;
+}
+
+@keyframes dt-ping {
+  70% { box-shadow:0 0 0 16px rgba(224,62,51,0); }
+  100% { box-shadow:0 0 0 0 rgba(224,62,51,0); }
+}
+
+.dt-spot.hidden {
+  display:none;
+}
+
+#dt-hint {
+  position:absolute;
+  left:16px;
+  bottom:14px;
+  color:var(--ink-faint);
+  font-size:13px;
+  pointer-events:none;
+  text-shadow:0 1px 3px #000;
+}
+
+/* ---------- inspector card ---------- */
+#dt-inspector {
+  position:absolute;
+  left:16px;
+  top:70px;
+  width:290px;
+  background:rgba(14,22,32,.94);
+  border:1px solid var(--line);
+  backdrop-filter:blur(3px);
+  display:none;
+  z-index: 10;
+}
+
+#dt-inspector.on {
+  display:block;
+}
+
+#dt-inspector header {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+}
+
+#dt-inspector header h3 {
+  margin:0;
+  font-size:16px;
+  font-weight:600;
+  line-height:1.2;
+}
+
+#dt-inspector header p {
+  margin:2px 0 0;
+  font-size:12.5px;
+  color:var(--ink-faint);
+}
+
+#dt-inspector .dt-x {
+  margin-left:auto;
+  background:none;
+  border:0;
+  color:var(--ink-faint);
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  padding:0 2px;
+}
+
+#dt-inspector .dt-x:hover {
+  color:var(--ink);
+}
+
+.dt-health {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border-bottom:1px solid var(--line);
+}
+
+.dt-health .dt-bar {
+  flex:1;
+  height:5px;
+  background:#1b2833;
+  overflow:hidden;
+}
+
+.dt-health .dt-bar i {
+  display:block;
+  height:100%;
+  background:var(--ok);
+  transition:width .3s,background .3s;
+}
+
+.dt-health .dt-pc {
+  font-size:13px;
+  color:var(--ink-dim);
+  width:38px;
+  text-align:right;
+}
+
+#dt-ins-rows {
+  padding:4px 0;
+}
+
+#dt-ins-note {
+  padding:8px 12px 10px;
+  font-size:13px;
+  color:var(--ink-dim);
+  border-top:1px solid var(--line);
+}
+
+#dt-ins-fix {
+  display:none;
+  width:calc(100% - 24px);
+  margin:0 12px 12px;
+  padding:9px;
+  border:0;
+  border-radius:2px;
+  cursor:pointer;
+  background:var(--ok);
+  color:#04211c;
+  font-family:inherit;
+  font-size:14.5px;
+  font-weight:600;
+}
+
+#dt-ins-fix.on {
+  display:block;
+}
+
+#dt-ins-fix:hover {
+  filter:brightness(1.1);
+}
+
+/* ---------- right rail ---------- */
+#dt-rail {
+  flex:0 0 322px;
+  background:var(--panel);
+  border-left:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+}
+
+#dt-rail h1 {
+  margin:0;
+  padding:14px 16px 12px;
+  font-size:16.5px;
+  font-weight:600;
+  line-height:1.25;
+  border-bottom:1px solid var(--line);
+}
+
+#dt-rail h1 small {
+  display:block;
+  color:var(--ink-faint);
+  font-size:12.5px;
+  font-weight:400;
+  margin-top:3px;
+}
+
+.dt-block {
+  padding:13px 16px;
+  border-bottom:1px solid var(--line);
+}
+
+.dt-block > h2 {
+  margin:0 0 9px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--ink-faint);
+}
+
+.dt-btn {
+  display:block;
+  width:100%;
+  margin-bottom:7px;
+  padding:9px 10px;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font-family:inherit;
+  font-size:14.5px;
+  text-align:left;
+  cursor:pointer;
+  border-radius:2px;
+}
+
+.dt-btn:hover {
+  border-color:#3a5064;
+  background:#17242f;
+}
+
+.dt-btn.prime {
+  background:#1d3a4d;
+  border-color:#2f5d79;
+}
+
+.dt-btn.danger {
+  border-color:rgba(214,85,47,.45);
+  color:#f0b39c;
+}
+
+.dt-btn:disabled {
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+.dt-select {
+  width:100%;
+  padding:8px 9px;
+  margin-bottom:7px;
+  border-radius:2px;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font-family:inherit;
+  font-size:14px;
+}
+
+.dt-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 12px;
+  font-size:14px;
+}
+
+.dt-row .n {
+  flex:1;
+  color:var(--ink-dim);
+}
+
+.dt-row .v {
+  width:76px;
+  text-align:right;
+  font-size:13.5px;
+}
+
+.dt-row .e {
+  width:64px;
+  text-align:right;
+  font-size:12px;
+  color:var(--ink-faint);
+}
+
+.dt-row.dev .v {
+  color:var(--caution);
+}
+
+.dt-row.bad .v {
+  color:var(--crit);
+}
+
+#dt-tele .dt-row {
+  padding:5px 16px;
+}
+
+#dt-subs button {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  padding:6px 16px;
+  background:none;
+  border:0;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:14px;
+  color:var(--ink-dim);
+  text-align:left;
+}
+
+#dt-subs button:hover {
+  background:var(--panel-2);
+  color:var(--ink);
+}
+
+#dt-subs .dt-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--ok);
+  flex:0 0 auto;
+}
+
+#dt-subs .dt-pct {
+  margin-left:auto;
+  font-size:12.5px;
+  color:var(--ink-faint);
+}
+
+#dt-why {
+  padding:0 16px 14px;
+}
+
+#dt-why .dt-hdr {
+  font-size:13px;
+  color:var(--ink-faint);
+  margin:0 0 8px;
+}
+
+#dt-why p {
+  margin:0 0 9px;
+  font-size:13.5px;
+  color:var(--ink-dim);
+  line-height:1.4;
+}
+
+#dt-why .dt-d {
+  display:flex;
+  gap:8px;
+  font-size:13px;
+  padding:3px 0;
+  color:var(--ink-dim);
+}
+
+#dt-why .dt-d b {
+  margin-left:auto;
+  font-weight:500;
+  color:var(--caution);
+  font-family:"IBM Plex Mono",monospace;
+}
+
+#dt-log {
+  flex:1 1 auto;
+  padding:12px 16px;
+  min-height:120px;
+}
+
+#dt-log h2 {
+  margin:0 0 8px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--ink-faint);
+}
+
+#dt-log ol {
+  margin:0;
+  padding:0;
+  list-style:none;
+  font-size:13px;
+  line-height:1.45;
+}
+
+#dt-log li {
+  display:flex;
+  gap:9px;
+  padding:2px 0;
+  color:var(--ink-dim);
+}
+
+#dt-log li time {
+  color:var(--ink-faint);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12px;
+  flex:0 0 46px;
+}
+
+#dt-log li.w {
+  color:#f0b39c;
+}
+
+#dt-log li.g {
+  color:#8fd8c9;
+}
+
+/* ---------- loss overlay ---------- */
+#dt-loss {
+  position:absolute;
+  inset:0;
+  display:none;
+  place-items:center;
+  background:rgba(4,7,10,.82);
+  backdrop-filter:blur(2px);
+  z-index: 20;
+}
+
+#dt-loss.on {
+  display:grid;
+}
+
+#dt-loss .dt-card {
+  width:min(430px,86%);
+  background:var(--panel);
+  border:1px solid rgba(224,62,51,.45);
+  padding:20px 22px;
+}
+
+#dt-loss h2 {
+  margin:0 0 4px;
+  font-size:21px;
+  font-weight:600;
+  color:var(--crit);
+}
+
+#dt-loss .dt-sub {
+  margin:0 0 14px;
+  color:var(--ink-faint);
+  font-size:13.5px;
+}
+
+#dt-loss dl {
+  margin:0 0 16px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:5px 14px;
+  font-size:13.5px;
+}
+
+#dt-loss dt {
+  color:var(--ink-faint);
+}
+
+#dt-loss dd {
+  margin:0;
+  text-align:right;
+}
+
+#dt-loss .dt-btn {
+  margin:0;
+}
+
+@media (max-width:900px){
+  .dt-container {
+    flex-direction:column;
+  }
+  #dt-rail {
+    flex:0 0 auto;
+    max-height:46%;
+    border-left:0;
+    border-top:1px solid var(--line);
+  }
+  #dt-stage {
+    flex:1 1 54%;
+  }
+  #dt-inspector {
+    width:250px;
+    top:64px;
+  }
+  #dt-strip {
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  #dt-strip .dt-flight {
+    display:none;
+  }
+}
+
+/* ── Mission Progress Bar ─────────────────────────────── */
+#dt-progress {
+  position:absolute;
+  bottom:42px;
+  left:16px;
+  right:16px;
+  pointer-events:none;
+}
+
+/* ── Log color classes ──────────────────────────────── */
+#dt-log li.g {
+  color: var(--ok);
+}
+
+/* ── dt-block h2 transition ─────────────────────────── */
+.dt-block > h2 {
+  transition: color 0.3s;
+}
+
+/* ── AI block styling ────────────────────────────────── */
+.dt-block svg text {
+  user-select: none;
+}
+
+/* ── Speed buttons ───────────────────────────────────── */
+#dt-hint button {
+  pointer-events: all;
+}
